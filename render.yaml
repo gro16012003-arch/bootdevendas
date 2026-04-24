@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: ml-afiliados-bot
+    region: frankfurt
+    env: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: WHATSAPP_TARGET_NUMBER
+        value: "55992637057"
+      - key: WHATSAPP_TARGET_GROUP
+        value: "Achadinhos Top"
+      - key: ML_AFFILIATE_TAG
+        value: "ROGA20240208103341"
+      - key: ML_SEARCH_KEYWORD
+        value: "Panelas, frigideiras, Talheres, pratos, copos, Air Fryer, Liquidificador, Micro-ondas, Cafeteira, Potes herméticos, Porta temperos, Tábua de corte, Vassoura, Rodo, Mop esfregão, Balde, Panos de limpeza, Sabão líquido, Detergente, Desinfetante, Água sanitária, Amaciante, Esponjas, Luvas de limpeza, Máquina de lavar, Varal, Ferro de passar, Tábua de passar, Cesto de roupa, Organizadores de roupa, Sofá, Rack painel TV, Televisão, Tapete sala, Cortina, Ventilador, Cama colchão, Travesseiros, Lençóis, Cobertores, Guarda-roupa, Cabides, Chuveiro, Toalhas banho, Tapete de banheiro, Lixeira banheiro, Espelho banheiro, Porta sabonete, Caixas organizadoras, Organizadores de gaveta, Prateleiras, Nichos parede, Carrinho com rodinhas, Quadros decorativos, Luminárias decorativas, Plantas artificiais, Espelhos decorativos, Velas decorativas, Almofadas, Cortinas estilizadas, Tapetes decorativos"
+      - key: CRON_CAPTURE_SCHEDULE
+        value: "0 * * * *"
+      - key: CRON_PUBLISH_SCHEDULE
+        value: "*/3 * * * *"
