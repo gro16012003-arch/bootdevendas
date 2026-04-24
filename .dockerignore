@@ -1,9 +1,11 @@
 node_modules
 .env
+.baileys_auth
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
 .git
 .gitignore
-npm-debug.log
-.baileys_auth
-database.sqlite
-database.sqlite-shm
-database.sqlite-wal
+push.ps1
+render.yaml
+README.md
