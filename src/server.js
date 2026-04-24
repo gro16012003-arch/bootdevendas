@@ -21,10 +21,14 @@ const startServer = async () => {
 
     // ✅ PASSO 1: Servidor web sobe PRIMEIRO — porta sempre aberta para o Render
     await new Promise((resolve, reject) => {
-        app.listen(env.port, '0.0.0.0', () => {
+        const server = app.listen(env.port, '0.0.0.0', () => {
             logger.info(`🌐 Servidor Web ativo na porta ${env.port}`);
             resolve();
         }).on('error', reject);
+        
+        // Evita erro 502 Bad Gateway no Render
+        server.keepAliveTimeout = 120000;
+        server.headersTimeout = 120000;
     });
 
     // ✅ PASSO 2: Banco de dados com retry automático (3 tentativas)
