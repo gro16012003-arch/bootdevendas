@@ -1,0 +1,9 @@
+node_modules
+.env
+.git
+.gitignore
+npm-debug.log
+.baileys_auth
+database.sqlite
+database.sqlite-shm
+database.sqlite-wal

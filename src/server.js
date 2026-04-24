@@ -80,6 +80,6 @@ const startServer = async () => {
 };
 
 startServer().catch(err => {
-    logger.error('❌ FALHA FATAL NO BOOT:', err.message);
+    logger.error(`❌ FALHA FATAL NO BOOT: ${err.stack || err.message || err}`);
     process.exit(1);
 });
