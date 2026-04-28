@@ -93,11 +93,11 @@ const startCaptureJob = () => {
   logger.info(`Agendando job de captura com cron: ${env.cronCaptureSchedule}`);
   cron.schedule(env.cronCaptureSchedule, captureTask);
 
-  // Disparo inicial após 10 segundos para resultados imediatos
-  logger.info('🚀 Agendando captura inicial para 10 segundos após o boot...');
+  // Disparo inicial após 120 segundos para evitar pico de RAM com o WhatsApp
+  logger.info('🚀 Agendando captura inicial para 120 segundos após o boot...');
   setTimeout(() => {
       captureTask().catch(err => logger.error('Erro na captura inicial:', err));
-  }, env.initialCaptureDelay);
+  }, 120000); // 2 minutos de folga
 };
 
 module.exports = { startCaptureJob, captureTask };
