@@ -22,19 +22,20 @@ process.on('uncaughtException', (err) => {
 });
 
 const startServer = async () => {
-    logger.info('🚀 Iniciando Boot...');
+    try {
+        logger.info('🚀 Iniciando Boot...');
 
-    // ✅ PASSO 1: Servidor web sobe PRIMEIRO — porta sempre aberta para o Render
-    await new Promise((resolve, reject) => {
-        const server = app.listen(env.port, '0.0.0.0', () => {
-            logger.info(`🌐 Servidor Web ativo na porta ${env.port}`);
-            resolve();
-        }).on('error', reject);
-        
-        // Evita erro 502 Bad Gateway no Render
-        server.keepAliveTimeout = 120000;
-        server.headersTimeout = 120000;
-    });
+        // ✅ PASSO 1: Servidor web sobe PRIMEIRO — porta sempre aberta para o Render
+        await new Promise((resolve, reject) => {
+            const server = app.listen(env.port, '0.0.0.0', () => {
+                logger.info(`🌐 Servidor Web ativo na porta ${env.port}`);
+                resolve();
+            }).on('error', reject);
+            
+            // Evita erro 502 Bad Gateway no Render
+            server.keepAliveTimeout = 120000;
+            server.headersTimeout = 120000;
+        });
 
         // Pequena pausa para estabilizar
         await new Promise(resolve => setTimeout(resolve, 5000));
@@ -75,7 +76,4 @@ const startServer = async () => {
     }
 };
 
-startServer().catch(err => {
-    logger.error(`❌ FALHA FATAL NO BOOT: ${err.stack || err.message || err}`);
-    process.exit(1);
-});
+startServer();
