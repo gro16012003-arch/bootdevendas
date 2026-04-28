@@ -19,9 +19,9 @@ const captureTask = async () => {
         return;
     }
 
-    // 🔄 ROTAÇÃO: Processa no máximo 10 keywords por ciclo para evitar timeout
-    // A cada hora, pega as próximas 10 da lista (rotação circular)
-    const maxPerCycle = 10;
+    // 🔄 ROTAÇÃO: Processa no máximo 3 keywords por ciclo para evitar timeout de memória (OOM)
+    // A cada hora, pega as próximas 3 da lista (rotação circular)
+    const maxPerCycle = 3;
     const startIndex = keywordRotationIndex % allKeywords.length;
     let selectedKeywords = [];
     
