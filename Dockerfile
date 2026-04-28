@@ -18,6 +18,6 @@ COPY . .
 # Permissões na pasta local
 RUN mkdir -p .baileys_auth && chmod 777 .baileys_auth
 
-EXPOSE 3000
+EXPOSE 10000
 
 CMD [ "node", "src/server.js" ]
