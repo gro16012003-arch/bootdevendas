@@ -97,7 +97,13 @@ class WhatsappPublisher {
           logger: pino({ level: 'silent' }),
           browser: ['Ubuntu', 'Chrome', '124.0.0.0'],
           connectTimeoutMs: 60000,
-          printQRInTerminal: true
+          printQRInTerminal: true,
+          // 🚀 OTIMIZAÇÕES DE MEMÓRIA CRÍTICAS:
+          shouldSyncHistoryMessage: () => false, // Não baixa conversas antigas (ECONOMIA GIGANTE DE RAM)
+          markOnlineOnConnect: false,
+          syncFullHistory: false,
+          linkPreviewImageThumbnailWidth: 100,
+          getMessage: async () => { return { conversation: 'Lighter' } } // Cache fake
         });
 
         // SALVA NO BANCO SEMPRE QUE O LOGIN MUDA

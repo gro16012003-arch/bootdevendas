@@ -37,7 +37,8 @@ const startServer = async () => {
             server.headersTimeout = 120000;
         });
 
-        // Pequena pausa para estabilizar
+        // Pequena pausa para estabilizar e limpar memória
+        if (global.gc) global.gc(); 
         await new Promise(resolve => setTimeout(resolve, 5000));
 
         // ✅ FASE 2: Banco de Dados Neon
