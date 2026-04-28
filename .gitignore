@@ -4,3 +4,8 @@ database.sqlite
 logs/
 .wwebjs_auth/
 .wwebjs_cache/
+.baileys_auth/
+*.log
+core.*
+*.dump
+.DS_Store
