@@ -1,11 +1,16 @@
+// Importações leves para o boot inicial
 const app = require('./app');
 const env = require('./config/env');
 const logger = require('./config/logger');
-const { initializeDB } = require('./database/init');
-const { startCaptureJob } = require('./jobs/capture.job');
-const { startPublishJob } = require('./jobs/publisher.job');
-const { startCleanupJob } = require('./jobs/cleanup.job');
-const whatsappPublisher = require('./publishers/whatsapp.publisher');
+
+// Lazy-loading de funções pesadas
+const getInitDB = () => require('./database/init').initializeDB;
+const getWhatsapp = () => require('./publishers/whatsapp.publisher');
+const getJobs = () => ({
+    startCaptureJob: require('./jobs/capture.job').startCaptureJob,
+    startPublishJob: require('./jobs/publisher.job').startPublishJob,
+    startCleanupJob: require('./jobs/cleanup.job').startCleanupJob
+});
 
 // Proteção contra erros fatais não tratados
 process.on('unhandledRejection', (reason) => {
@@ -36,6 +41,7 @@ const startServer = async () => {
 
         // ✅ FASE 2: Banco de Dados Neon
         logger.info('🐘 FASE 2: Conectando ao Banco de Dados...');
+        const initializeDB = getInitDB();
         await initializeDB();
         logger.info('✅ Banco de Dados pronto.');
 
@@ -45,6 +51,7 @@ const startServer = async () => {
 
         // ✅ FASE 3: WhatsApp Publisher
         logger.info('📱 FASE 3: Iniciando WhatsApp...');
+        const whatsappPublisher = getWhatsapp();
         whatsappPublisher.initialize().catch(err => {
             logger.error('⚠️ Falha ao iniciar WhatsApp:', err.message);
         });
@@ -55,6 +62,7 @@ const startServer = async () => {
 
         // ✅ FASE 4: Agendamento de Jobs
         logger.info('⚙️ FASE 4: Ativando Jobs de Automação...');
+        const { startCaptureJob, startPublishJob, startCleanupJob } = getJobs();
         startCleanupJob();
         startCaptureJob();
         startPublishJob();
