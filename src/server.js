@@ -31,51 +31,39 @@ const startServer = async () => {
         server.headersTimeout = 120000;
     });
 
-    // ✅ PASSO 2: Banco de dados com retry automático (3 tentativas)
-    let dbOk = false;
-    for (let tentativa = 1; tentativa <= 3; tentativa++) {
-        try {
-            await initializeDB();
-            dbOk = true;
-            logger.info('✅ Banco de dados pronto.');
-            
-            // 🧹 LIMPEZA FORÇADA PARA MUDANÇA DE NICHO
-            const repository = require('./database/repository');
-            await repository.clearQueue();
-            logger.info('🧹 Limpeza forçada de transição de nicho realizada com sucesso!');
-            
-            break;
-        } catch (err) {
-            logger.error(`❌ Tentativa ${tentativa}/3 falhou: ${err.message}`);
-            if (tentativa < 3) await new Promise(r => setTimeout(r, 5000));
-        }
-    }
+        // Pequena pausa para estabilizar
+        await new Promise(resolve => setTimeout(resolve, 5000));
 
-    if (!dbOk) {
-        logger.error('❌ Banco indisponível após 3 tentativas. Continuando sem banco (modo degradado).');
-    }
+        // ✅ FASE 2: Banco de Dados Neon
+        logger.info('🐘 FASE 2: Conectando ao Banco de Dados...');
+        await initializeDB();
+        logger.info('✅ Banco de Dados pronto.');
 
-    // ✅ PASSO 3: WhatsApp em background (nunca trava o boot)
-    whatsappPublisher.initialize().catch(err => {
-        logger.error('⚠️ Falha ao iniciar WhatsApp:', err.message);
-    });
+        // Pausa de 20 segundos para o Garbage Collector limpar a memória do boot do DB
+        logger.info('⏳ Aguardando 20s para estabilizar memória...');
+        await new Promise(resolve => setTimeout(resolve, 20000));
 
-    // ✅ PASSO 4: Jobs agendados
-    startCleanupJob();
-    startCaptureJob();
-    startPublishJob();
-    logger.info('⚙️ Jobs de automação agendados.');
+        // ✅ FASE 3: WhatsApp Publisher
+        logger.info('📱 FASE 3: Iniciando WhatsApp...');
+        whatsappPublisher.initialize().catch(err => {
+            logger.error('⚠️ Falha ao iniciar WhatsApp:', err.message);
+        });
 
-    // ✅ PASSO 5: Keep-Alive para evitar spindown do Render
-    const externalUrl = process.env.RENDER_EXTERNAL_HOSTNAME;
-    if (externalUrl) {
-        logger.info(`🔄 Keep-alive ativado para ${externalUrl}`);
-        setInterval(() => {
-            const http = require('https');
-            http.get(`https://${externalUrl}/health`).on('error', (err) => {
-                logger.error(`Erro no keep-alive: ${err.message}`);
-            });
-        }, 14 * 60 * 1000); // 14 minutos
+        // Pausa de mais 30 segundos antes de começar a pesada tarefa de captura
+        logger.info('⏳ Aguardando 30s antes de ativar automações...');
+        await new Promise(resolve => setTimeout(resolve, 30000));
+
+        // ✅ FASE 4: Agendamento de Jobs
+        logger.info('⚙️ FASE 4: Ativando Jobs de Automação...');
+        startCleanupJob();
+        startCaptureJob();
+        startPublishJob();
+        
+        logger.info('🚀 Boot concluído com sucesso!');
+
+    } catch (fatalError) {
+        logger.error('❌ FALHA CRÍTICA NO BOOT:', fatalError.message);
+        process.exit(1);
     }
 };
 
